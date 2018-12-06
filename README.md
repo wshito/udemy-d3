@@ -12,3 +12,7 @@ $ python3 -m http.server
 
 - Project 1: Star Break Coffee
     - Directory 3.13.0
+- Dynamic Transition of Bar Chart
+    - Directory 5.02.1
+- Project 2: 
+    - Direvtory 5.10.0
