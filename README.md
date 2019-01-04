@@ -15,4 +15,6 @@ $ python3 -m http.server
 - Dynamic Transition of Bar Chart
     - Directory 5.02.1
 - Project 2: 
-    - Direvtory 5.10.0
+    - Directory 5.10.0
+- Sec6: Make it interactive
+    - Directory 6.07.0:  My own implementation of legend, tooltips, UI slider.

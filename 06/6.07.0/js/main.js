@@ -1,7 +1,7 @@
 /*
  *    main.js
  *    Mastering Data Visualization with D3.js
- *    Project 2 - Gapminder Clone
+ *    Project 2 + Sec6 interaction
  */
 // Clean data
 const formatData = data => data.map(year => {
@@ -138,8 +138,33 @@ const drawBubbleChart = svgObj => data => {
   );
   //--- レジェンド終了
 
-  const update = data => {
-    // draw rectabulars
+  // Tooltips
+  let decimalFormatter = d3.format('.2f');
+  let moneyFormatter = d3.format('$,.0f');
+  let popFormatter = d3.format(',.0f');
+  let tooltip = d3.tip().attr('class', 'd3-tip') // 'd3-tip' は css ファイルのクラス名
+    .html(d => `
+      <strong>Country:</strong> <span style='color:red'>${d.country}</span><br>
+      <strong>Continent:</strong> <span style='color:red;text-transform:capitalize'>${d.continent}</span><br>
+      <strong>Life Expectancy:</strong> <span style='color:red'>${decimalFormatter(d.life_exp)}</span><br>
+      <strong>Income:</strong> <span style='color:red'>${moneyFormatter(d.income)}</span><br>
+      <strong>Population:</strong> <span style='color:red'>${popFormatter(d.population)}</span><br>
+    `);
+  svg.call(tooltip);
+
+  const update = aData => {
+    // selectに応じて大陸をフィルタリング
+    let selectedContinent = $('#continent-select').val();
+    let data = { ...aData,
+      countries: aData.countries.filter(d => {
+        if (selectedContinent === 'all') {
+          return true;
+        } else {
+          return d.continent === selectedContinent;
+        }
+      })
+    };
+    // Transition must be instantiated every drawing
     let trn = d3.transition().duration(50);
     // JOIN new data with old elements
     let circles = svg.selectAll('circle')
@@ -158,6 +183,8 @@ const drawBubbleChart = svgObj => data => {
       .attr("class", "enter")
       .attr('fill', d => color(d.continent))
       //.attr('fill-opacity', 0.7)
+      .on('mouseover', tooltip.show) // enter時に1回だけtooltip用イベントリスナーをattachする．merge後に実行すると
+      .on('mouseout', tooltip.hide) // 既に画面に描画されている要素のデータ更新時にもattachされてしまう．
       // UPDATE old elements together with new elements
       .merge(circles)
       .transition(trn)
@@ -167,13 +194,36 @@ const drawBubbleChart = svgObj => data => {
 
     yearText.text(data.year);
   };
-  let i = 0;
+
+  let time = 0;
   let len = data.length - 1;
-  d3.interval(() => {
-    i = (i < len) ? i + 1 : 0;
-    update(data[i]);
-  }, 100);
-  update(data[i]);
+  // step function to call update based on the time
+  let step = () => {
+    time = (time < len) ? time + 1 : 0
+    update(data[time]);
+  }
+  let interval = null;
+  // setup the play-pause button
+  let playPauseButton = $('#play-button');
+  playPauseButton.on('click', () => {
+    if (playPauseButton.text() === 'Play') {
+      playPauseButton.text('Pause');
+      interval = setInterval(step, 100);
+    } else {
+      playPauseButton.text('Play');
+      clearInterval(interval);
+    }
+  });
+  // setup the reset  button
+  $('#reset-button').on('click', () => {
+    time = 0;
+    update(data[0]);
+  });
+  // pause中に大陸の選択が変更された時のための更新
+  $('#continent-select').on('change', () => {
+    update(data[time]);
+  });
+  update(data[time]);
 };
 
 const drawLifeExpBubbleChart = drawBubbleChart(
