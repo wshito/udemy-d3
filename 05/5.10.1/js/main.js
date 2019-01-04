@@ -102,7 +102,7 @@ function update (data) {
     .duration(50);
 
   // JOIN new data with old elements.
-  var circles = g.selectAll("circle").data(data.countries, function (d) {
+  var circles = g.selectAll("circle").data(data, function (d) {
     return d.country;
   });
 

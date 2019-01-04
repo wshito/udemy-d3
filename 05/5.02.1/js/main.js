@@ -26,6 +26,11 @@ const readJSON = path => numericPropNames => d3.json(path).then(d => {
   return d;
 });
 
+/*
+ * @param fx 与えられたデータオブジェクトからxデータを取り出す関数．
+ * @param yObj 与えられたデータオブジェクトからrevenueとprofitを
+ *  取り出す関数を要素に持つオブジェクト．
+ */
 const drawBarChart = svgObj => (fx, yObj) => data => {
   let { svg, width, height, margins } = svgObj;
   let labelSize = 20;
@@ -63,23 +68,22 @@ const drawBarChart = svgObj => (fx, yObj) => data => {
   // Setup Y-Axis
   let yAxisGroup = svg.append('g')
     .attr('class', 'y axis')
-  // draw rectabulars
 
   let trn = d3.transition().duration(500);
 
   const update = (data) => {
-    fy = flag ? yObj.revenue : yObj.profit;
+    fy = flag ? yObj.revenue : yObj.profit; // yデータを取り出す関数を更新
     x.domain(data.map(fx));
     y.domain([0, Math.max(...data.map(fy))]);
     // draw x-axis
-    let xAxisCall = d3.axisBottom(x)
+    let xAxisCall = d3.axisBottom(x) // xのスケールオブジェクトからAxisを作成
     xAxisGroup.transition(trn).call(xAxisCall)
       .selectAll('text') // 描画後tickのラベルを修正
       .attr('x', 0)
       .attr('y', 13)
       .attr('text-anchor', 'middle');
     // draw y-axis
-    let yAxisCall = d3.axisLeft(y)
+    let yAxisCall = d3.axisLeft(y) // yのスケールオブジェクトからAxisを作成　
       .tickFormat(d => '$' + d);
     yAxisGroup.transition(trn).call(yAxisCall);
 
@@ -97,7 +101,7 @@ const drawBarChart = svgObj => (fx, yObj) => data => {
 
     // UPDATE old elements in new data
     /*
-    rects.transition(trn)
+    rects.transition(trn
       .attr('x', d => x(fx(d)))
       .attr('y', d => y(fy(d)))
       .attr('width', x.bandwidth)
@@ -132,8 +136,6 @@ const drawBarChart = svgObj => (fx, yObj) => data => {
 
   }, 1000);
   update(data);
-
-
 }
 
 const drawCoffeShopBarChart = drawBarChart(

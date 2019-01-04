@@ -112,7 +112,31 @@ const drawBubbleChart = svgObj => data => {
     .attr('y', height - 20)
     .attr('font-size', '40px')
     .attr('opacity', 0.4)
-    .attr('text-anchor', 'end')
+    .attr('text-anchor', 'end');
+
+  // 大陸の色のレジェンドを追加
+  let legend = svg.append('g')
+    .attr('class', 'legend')
+    .attr('transform', `translate(${width - 10}, ${height - 170})`);
+
+  let continents = ['europe', 'americas', 'asia', 'africa'];
+  continents.forEach(
+    (ele, i, arr) => {
+      let legendRow = legend.append('g')
+        .attr('transform', `translate(0, ${i * 20})`);
+      legendRow.append('rect')
+        .attr('width', 10)
+        .attr('height', 10)
+        .attr('fill', color(ele));
+      legendRow.append('text')
+        .attr('x', -10)
+        .attr('y', 10)
+        .attr('text-anchor', 'end')
+        .style('text-transform', 'capitalize')
+        .text(ele);
+    }
+  );
+  //--- レジェンド終了
 
   const update = data => {
     // draw rectabulars
