@@ -18,3 +18,5 @@ $ python3 -m http.server
     - Directory 5.10.0
 - Sec6: Make it interactive
     - Directory 6.07.0:  My own implementation of legend, tooltips, UI slider.
+- Project 3: Coin Stats
+    - Directory 6.10.0

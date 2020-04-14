@@ -36,7 +36,6 @@ const createSVG = selectorID => margins => (width, height) => {
 const getDomain = data => {
   console.log(data);
   const initMinMax = { pop_max: 0, pop_min: Infinity, income_max: 0, income_min: Infinity, life_exp: 0 };
-  let found = false;
   const minMax = (acc, d) => {
     if (d.population && d.population > 0) {
       acc.pop_max = Math.max(acc.pop_max, d.population);
@@ -192,8 +191,12 @@ const drawBubbleChart = svgObj => data => {
       .attr('cy', d => y(d.life_exp))
       .attr('r', d => Math.sqrt(r(d.population) / Math.PI))
 
+    // Update the time label
     yearText.text(data.year);
-  };
+    // Update the slider's year label
+    $('#year')[0].innerHTML = data.year;
+    $('#date-slider').slider('value', data.year);
+  }; // end of update() function
 
   let time = 0;
   let len = data.length - 1;
@@ -219,9 +222,19 @@ const drawBubbleChart = svgObj => data => {
     time = 0;
     update(data[0]);
   });
-  // pause中に大陸の選択が変更された時のための更新
+  // pause中にContinentの選択が変更された時のための更新
   $('#continent-select').on('change', () => {
     update(data[time]);
+  });
+  // Slider setup
+  $('#date-slider').slider({
+    max: 2014,
+    min: 1800,
+    step: 1,
+    slide: (event, ui) => {
+      time = ui.value - 1800;
+      update(data[time]);
+    }
   });
   update(data[time]);
 };
